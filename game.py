@@ -295,3 +295,193 @@ class Game:
             say("The silver thread pulls toward three unfinished stories.")
             selected = self.choose("Where will you go?", labels)
             actions[selected - 1]()
+
+        self.unlock("Lantern Fields")
+        self.lantern_fields()
+
+    def market(self) -> None:
+        self.state.location = "Silent Market"
+
+        say(
+            "Amara stands beneath her family's copper bell. 'The bell used to "
+            "call the morning bread awake,' she says. 'Last night I lied and "
+            "told everyone the ovens would be fine. Now the bell will not "
+            "speak to a liar.'"
+        )
+
+        answer = self.choose(
+            "How do you answer Amara?",
+            [
+                "Tell Amara that a lie can be repaired by a brave truth.",
+                "Promise to fix the bell before anyone notices.",
+                "Ask what was she trying to protect.",
+            ],
+        )
+
+        if answer == 1:
+            self.state.relationships["Amara"] += 2
+            say("Amara nods, though her eyes glisten. 'Then listen with me.'")
+
+        elif answer == 2:
+            say("'That is what I did,' Amara says softly. 'It is why the silence grew.'")
+
+        else:
+            self.state.relationships["Amara"] += 1
+            self.state.lore.add("Amara feared the village would lose hope.")
+            say(
+                "'My father is ill,' Amara admits. 'I wanted one ordinary morning "
+                "before everyone knew.'"
+            )
+
+        say("The bell's clapper is missing. Three objects wait beneath the stall.")
+
+        answer = self.choose(
+            "What do you use to call the bell's voice back?"
+            [
+                "A hard stone, to force the bell to ring.",
+                "Amara's spoken confession beneath the bell.",
+                "A coin from the till, as payment to the bell.",
+            ],
+        )
+
+        if answer == 2:
+            self.state.relationships["Amara"] += 1
+            say(
+                "Amara tells the market exactly what she feared. Her voice shakes, "
+                "then steadies. The copper bell answers with one bright note: "
+                "'The small voice that tells the truth can wake a mountain.'"
+            )
+        else:
+            say(
+                "The bell makes no sound. Amara tells the truth anyway. Only then "
+                "does its note bloom across the market. It did not need force or "
+                "payment. It needed courage."
+            )
+
+        self.state.fragments.add("Courage")
+        self.state.flags.add("market_done")
+        say("You collect the Fragment of Courage. It warms the story-bag like sunrise.")
+
+    def archive(self) -> None:
+        self.state.location = "Baobab Archive"
+
+        say(
+            "Borin is surrounded by pages that empty themselves as he reads. "
+            "'I wrote down every story in Ndembe,' he says. 'But the oldest "
+            "tale was never written. Now I cannot remember it, and the tree "
+            "has sealed its hollow.'" 
+        )
+
+        answer = self.choose(
+            "What do you tell Borin?",
+            [
+                "A story can live in people, not only on pages.",
+                "We should copy the remaining pages before they vanish.",
+                "The tree is wrong to keep its knowledge hidden.",
+            ],
+        )
+
+        if answer == 1:
+            self.state.relationships["Borin"] += 2
+            say("'Then perhaps I have been keeping stories instead of listening to them.'")
+
+        elif answer == 2:
+            self.state.relationships["Borin"] += 1
+            say("Together you save a few lines, but each copied word grows thinner.")
+
+        else:
+            say(
+                "Borin flinches. 'The tree has kept us safe for generations. "
+                "It does not close without grief"
+            )
+
+        say("Three root-knots mark the sealed hollow: a handprint, blank page, and broken quill.")
+
+        answer = self.choose(
+            "Which memory do you offer the baobab?",
+            [
+                "Borin's first written story, praised by his teacher.",
+                "A village song you remember imperfectly, but sing anyway.",
+                "The blank page, promising the tree a record of its secrets.",
+            ],
+        )
+
+        if answer == 2:
+            self.state.relationships["Borin"] += 1
+            self.state.lore.add("The first story was sung, not written")
+            say(
+                "Your uncertain song winds through the roots. Borin joins on the "
+                "second line; the baobab hums the missing third. Its hollow opens. "
+                "'Memory is not perfect,' it whispers. 'Memory is shared.'"
+            )
+        else:
+            say(
+                "The roots remain still until Borin stops seeking exact words and "
+                "sings the old song as he remembers it. The hollow opens."
+            )
+
+        self.state.fragments.add("Memory")
+        self.state.flags.add("archive_done")
+        say("You collect the Fragment of Memory. Its letters rearrange when you blink.")
+
+    def river(self) -> None:
+        self.state.location = "River of Echoes"
+
+        say(
+            "Celia kneels beside the river. 'My sister crossed years ago,' he says. "
+            "'Tonight the water repeats her last words forever. I asket it to give "
+            "her back. It answered by taking every other voice from the village.'"
+        )
+
+        answer = self.choose(
+            "How do you respond?",
+            [
+                "Tell Celia to command the river ro release what it stole.",
+                "Sit beside her and listen without trying to solve the grief.",
+                "Tell her the river should be damned before it hurts anyone else.",
+            ],
+        )
+
+        if answer == 2:
+            self.state.relationships["Celia"] += 2
+            say(
+                "At last Celia says, 'She did not ask me to bring her back. "
+                "She asked me to let her go.'"
+            )
+        else:
+            say(
+                "Beneath the water, Celia's sister's echo says, "
+                "'Sister, do not turn love into a net.'"
+            )
+
+        say("The river offers a reed bridge, submerged stones, and a frayed boat.")
+
+        answer = self.choose(
+            "How do you cross towards the echo?",
+            [
+                "Take the bridge and refuse to look down.",
+                "Step on the stones and repeat Celia's sister's words.",
+                "Untie the boat and demand the river carry you.",
+            ],
+        )
+
+        if answer == 2:
+            self.state.relationships["Celia"] += 1
+            self.state.lore.add("Love can release without forgetting")
+            say(
+                "You repeat: 'Do not turn love into a net.' The river clears. "
+                "Celia's sister smiles from the far bank-not returned, but no "
+                "longer trapped. A pearl of light rises from the water."
+            )
+        else:
+            say(
+                "The river returns you gently to shore. Celia finally speaks her "
+                "sister's words as a farewell. A pearl of light rises from the water."
+            )
+
+        self.state.fragments.add("Mercy")
+        self.state.flags.add("river_done")
+        say("You collect the Fragment of Mercy. It is cool, bright and heavy.")
+
+    def lantern_fields(self) -> None:
+        
