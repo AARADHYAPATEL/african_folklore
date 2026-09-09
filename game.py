@@ -40,7 +40,7 @@ class Game:
     }
 
     def __init__(self) -> None:
-        self.state = GameState | None = None
+        self.state: GameState | None = None
 
     def title(self) -> None:
         line()
@@ -166,7 +166,7 @@ class Game:
 
         for person, description in descriptions.items():
             trust = self.state.relationships[person]
-            mood = "wary" if trust <= 0 else "friendly" if trust == 0 else "devoted"
+            mood = "wary" if trust <= 0 else "friendly" if trust == 1 else "devoted"
             print(f"  {person} - ({mood}): {description}.")
 
         print()
@@ -191,7 +191,7 @@ class Game:
         say(hints[fragment])
 
     def unlock(self, checkpoint: str) -> None:
-        if checkpoint not in self.state.checkpoint:
+        if checkpoint not in self.state.checkpoints:
             self.state.checkpoints.append(checkpoint)
 
     def checkpoint_menu(self) -> None:
@@ -201,7 +201,7 @@ class Game:
         )
 
         for index, checkpoint in enumerate(self.state.checkpoints, start=1):
-            print(f"  {index}. {checkpoint} - {self.description_text[checkpoint]}")
+            print(f"  {index}. {checkpoint} - {self.checkpoint_text[checkpoint]}")
 
         print("  0. Return to the current scene\n")
 
@@ -216,7 +216,7 @@ class Game:
                 self.restore_checkpoint(self.state.checkpoints[int(answer) - 1])
                 return
 
-            print("Please enter a listen number.")
+            print("Please enter a listed number.")
 
     def restore_checkpoint(self, checkpoint: str) -> None:
         old_name = self.state.name
@@ -290,7 +290,7 @@ class Game:
 
             if "river_done" not in self.state.flags:
                 labels.append("Visit the river of echoes with Celia")
-                actions.append(self.river_of_echoes)
+                actions.append(self.river)
 
             say("The silver thread pulls toward three unfinished stories.")
             selected = self.choose("Where will you go?", labels)
@@ -336,7 +336,7 @@ class Game:
         say("The bell's clapper is missing. Three objects wait beneath the stall.")
 
         answer = self.choose(
-            "What do you use to call the bell's voice back?"
+            "What do you use to call the bell's voice back?",
             [
                 "A hard stone, to force the bell to ring.",
                 "Amara's spoken confession beneath the bell.",
@@ -484,4 +484,110 @@ class Game:
         say("You collect the Fragment of Mercy. It is cool, bright and heavy.")
 
     def lantern_fields(self) -> None:
-        
+        self.state.location = "Lantern Fields"
+
+        say(
+            "The fragments pull the silver thread toward the Lantern Fields. "
+            "Amara, Borin and Celia follow. The Dawn-Gate stands ahead, stitched "
+            "closed with night. Its final line reads: 'Only the one who took "
+            "dawn may return it.'"
+        )
+
+        say(
+            "The thread becomes a reflection of you. You understand what your "
+            "teacher never said: dawn was not stolen by a villain. Storykeepers "
+            "hid it away when the world felt too dangerous to change."
+        )
+
+        self.state.lore.add("Dawn was hidden by fear, not a villain")
+
+        answer = self.choose(
+            "Which story will you speak?",
+            [
+                "Retell Courage: cut the night-thread and force the gate open.",
+                "Retell Memory: restore dawn exactly as it used to be.",
+                "Retell Mercy: invite the village to tell a new a dawn together.",
+            ],
+        )
+
+        if answer == 1:
+            self.ending(
+                "The Bright Break",
+                "You speak Courage. The night-thread snaps, and gold light pours "
+                "through the world. Dawn returns too quickly, scattering old "
+                "stories like startled birds. Ndembe survives-awake and changed.",
+            )
+
+        elif answer == 2:
+            self.ending(
+                "The Preserved Morning",
+                "You speak Memory. Every lantern lights with yesterday's dawn: "
+                "familiar bread, familiar songs, familiar shadows. The village "
+                "cheers, but the new morning never moves. You saved what was loved "
+                "and must now teach it how to grow.",
+            )
+
+        else:
+            trusted_friends = sum(
+                trust >= 2 for trust in self.state.relationships.values()
+            )
+            full_lore = len(self.state.lore) >= 4
+
+            if trusted_friends >= 2 and full_lore:
+                self.ending(
+                    "The Unwritten Dawn - True Ending",
+                    "You speak Mercy, then stop speaking alone. Amara rings the "
+                    "bell with her honest voice. Borin sings the imperfect old song. "
+                    "Celia releases the river's echo. The village adds grief, hope, "
+                    "apology, and laughter. The gate unravels gently. A new dawn "
+                    "rises-not a reward for a perfect past, but a promise that "
+                    "Ndembe can keep changing together.",
+                )
+
+            elif trusted_friends >= 2:
+                self.ending(
+                    "The Shared Dawn",
+                    "You invited the village to speak. Together, they tell a dawn "
+                    "that rises gently over the lantern fields. Some old questions "
+                    "remain, but Ndembe is no longer afraid to ask them together.",
+                )
+
+            else:
+                self.ending(
+                    "The Patient Dawn",
+                    "You invite the village to speak, but too few voices answer. "
+                    "Mercy does not punish silence. You begin the first line, and "
+                    "a thin, patient dawn opens above the fields. Tomorrow, more "
+                    "voices may join.",
+                )
+
+    def ending(self, title: str, text: str) -> None:
+        line()
+        print(title.upper().center(WIDTH))
+        line()
+        say(text)
+        say(
+            "Thank you for playing The Unwritten Dawn. Play again to discover "
+            "different relationships, lore, and endings."
+        )
+
+        while True:
+            answer = input("Play again? (yes/no) ").strip().lower()
+
+            if answer in {"yes", "y"}:
+                self.new_game()
+                return
+
+            if answer in {"no", "n", ""}:
+                print("\nMay your next story make room for morning.")
+                raise SystemExit
+
+            print("Please answer yes or no.")
+
+    def run(self) -> None:
+        self.title()
+        self.new_game()
+
+
+if __name__ == "__main__":
+    Game().run()
