@@ -428,7 +428,7 @@ class Game:
         self.state.location = "River of Echoes"
 
         say(
-            "Celia kneels beside the river. 'My sister crossed years ago,' he says. "
+            "Celia kneels beside the river. 'My sister crossed years ago,' she says. "
             "'Tonight the water repeats her last words forever. I asket it to give "
             "her back. It answered by taking every other voice from the village.'"
         )
