@@ -81,7 +81,7 @@ class Game:
         if command in {"help", "h", "?"}:
             say (
                 "Commands: LOOK describes your location. INVENTORY shows your "
-                "story fragments. STORIES show remembered love. TALK shows your "
+                "story fragments. STORIES show remembered lore. TALK shows your "
                 "companions. RETELL <fragment> gives a hint. CHECKPOINT lets you "
                 "revisit an unlocked chapter. RESTART begins again. QUIT exits."
             )
